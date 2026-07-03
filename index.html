@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cscare — The Operating System for Indian Clinics</title>
+<meta name="description" content="cscare is an AI-powered clinic operating system built for Indian healthcare practices — voice booking, clinical notes, and patient communication, handled automatically.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1E1C;
+    --paper:#F6F4EF;
+    --teal:#1F5C56;
+    --teal-deep:#123936;
+    --amber:#D98E3A;
+    --line: rgba(15,30,28,0.14);
+    --muted:#5B6664;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 32px;}
+  @media (max-width:640px){ .wrap{padding:0 20px;} }
+
+  h1,h2,h3{font-family:'Fraunces', serif; font-weight:600; letter-spacing:-0.01em; line-height:1.08;}
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--teal);
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:''; width:18px; height:1px; background:var(--teal); display:inline-block;}
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(246,244,239,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 0;
+  }
+  .logo{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:22px;
+    letter-spacing:-0.01em;
+  }
+  .logo span{color:var(--teal);}
+  .nav-links{display:flex; gap:36px; font-size:14.5px; font-weight:500;}
+  .nav-links a{text-decoration:none; opacity:0.75; transition:opacity .15s;}
+  .nav-links a:hover{opacity:1;}
+  .nav-cta{
+    font-size:14px; font-weight:600;
+    background:var(--teal-deep); color:var(--paper);
+    padding:10px 20px; border-radius:100px;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  @media (max-width:760px){ .nav-links{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:96px 0 88px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap:64px;
+    align-items:center;
+  }
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr; gap:56px;} }
+
+  .hero h1{
+    font-size:clamp(40px, 5.4vw, 62px);
+    margin:22px 0 26px;
+  }
+  .hero h1 em{
+    font-style:italic;
+    color:var(--teal);
+  }
+  .hero p.lede{
+    font-size:18px;
+    color:var(--muted);
+    max-width:480px;
+    margin-bottom:34px;
+  }
+  .hero-ctas{display:flex; gap:14px; align-items:center; flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--teal-deep); color:var(--paper);
+    padding:14px 26px; border-radius:100px;
+    text-decoration:none; font-weight:600; font-size:15px;
+    display:inline-flex; align-items:center; gap:8px;
+    transition:transform .15s;
+  }
+  .btn-primary:hover{transform:translateY(-1px);}
+  .btn-ghost{
+    padding:14px 22px; border-radius:100px;
+    text-decoration:none; font-weight:600; font-size:15px;
+    border:1px solid var(--line);
+    color:var(--ink);
+  }
+
+  /* Signature element: a mock "call transcript" card */
+  .call-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:26px;
+    box-shadow: 0 30px 60px -30px rgba(15,30,28,0.25);
+    position:relative;
+  }
+  .call-card::before{
+    content:'';
+    position:absolute;
+    top:-14px; left:26px;
+    width:28px; height:28px;
+    background:var(--amber);
+    border-radius:8px;
+    transform:rotate(12deg);
+  }
+  .call-head{
+    display:flex; align-items:center; gap:10px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; color:var(--muted);
+    padding-bottom:16px; margin-bottom:16px;
+    border-bottom:1px solid var(--line);
+  }
+  .dot{width:8px; height:8px; border-radius:50%; background:#2FA88A;}
+  .bubble{
+    font-size:14.5px;
+    padding:12px 15px;
+    border-radius:14px;
+    margin-bottom:10px;
+    max-width:85%;
+    line-height:1.45;
+  }
+  .bubble.patient{
+    background:#EFEBE1;
+    border-bottom-left-radius:4px;
+  }
+  .bubble.ai{
+    background:var(--teal);
+    color:var(--white);
+    margin-left:auto;
+    border-bottom-right-radius:4px;
+  }
+  .bubble .tag{
+    display:block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    opacity:0.6;
+    margin-bottom:4px;
+  }
+  .call-foot{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:16px; padding-top:16px; border-top:1px solid var(--line);
+    font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--muted);
+  }
+  .badge{
+    background:#EAF3E9; color:#2C6E4F;
+    padding:3px 10px; border-radius:100px;
+    font-weight:600;
+  }
+
+  /* ---------- LOGOS / STRIP ---------- */
+  .strip{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    padding:22px 0;
+  }
+  .strip .wrap{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em;
+  }
+
+  /* ---------- SECTION: what it does ---------- */
+  section{padding:96px 0;}
+  .section-head{max-width:600px; margin-bottom:56px;}
+  .section-head h2{font-size:clamp(28px,3.4vw,38px); margin-top:16px;}
+  .section-head p{color:var(--muted); font-size:16.5px; margin-top:14px;}
+
+  .feature-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:20px;
+    overflow:hidden;
+  }
+  @media (max-width:820px){ .feature-grid{grid-template-columns:1fr;} }
+  .feature{
+    background:var(--paper);
+    padding:36px 30px;
+  }
+  .feature .num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; color:var(--amber); font-weight:600;
+  }
+  .feature h3{
+    font-size:20px; margin:14px 0 10px;
+    font-weight:600;
+  }
+  .feature p{font-size:14.5px; color:var(--muted); line-height:1.55;}
+
+  /* ---------- SECTION: how it works ---------- */
+  .flow-section{background:var(--teal-deep); color:var(--paper);}
+  .flow-section .eyebrow{color:#8FCABE;}
+  .flow-section .eyebrow::before{background:#8FCABE;}
+  .flow-section .section-head p{color:rgba(246,244,239,0.68);}
+  .flow{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:24px;
+    counter-reset:step;
+  }
+  @media (max-width:820px){ .flow{grid-template-columns:1fr 1fr;} }
+  @media (max-width:520px){ .flow{grid-template-columns:1fr;} }
+  .step{
+    border-top:2px solid rgba(246,244,239,0.25);
+    padding-top:18px;
+  }
+  .step .step-index{
+    font-family:'Fraunces', serif;
+    font-size:34px;
+    color:#8FCABE;
+    margin-bottom:10px;
+    display:block;
+  }
+  .step h4{font-size:16px; font-weight:600; margin-bottom:8px;}
+  .step p{font-size:14px; color:rgba(246,244,239,0.65);}
+
+  /* ---------- WHO ITS FOR ---------- */
+  .who-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:14px;
+  }
+  @media (max-width:820px){ .who-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:480px){ .who-grid{grid-template-columns:1fr;} }
+  .who-card{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:24px 20px;
+    background:var(--white);
+  }
+  .who-card h4{font-size:16px; font-weight:600; margin-bottom:6px;}
+  .who-card p{font-size:13.5px; color:var(--muted);}
+
+  /* ---------- CTA BAND ---------- */
+  .cta-band{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:24px;
+    padding:56px 48px;
+    display:flex; align-items:center; justify-content:space-between; gap:32px;
+    flex-wrap:wrap;
+  }
+  .cta-band h2{font-size:clamp(26px,3vw,32px); max-width:440px;}
+  .cta-band p{color:var(--muted); margin-top:10px; font-size:15px;}
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:56px 0 40px;
+  }
+  .foot-grid{
+    display:flex; justify-content:space-between; gap:40px; flex-wrap:wrap;
+    margin-bottom:40px;
+  }
+  .foot-brand .logo{margin-bottom:14px;}
+  .foot-brand p{color:var(--muted); font-size:14px; max-width:280px;}
+  .foot-col h5{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px; text-transform:uppercase; letter-spacing:0.1em;
+    color:var(--muted); margin-bottom:14px;
+  }
+  .foot-col p, .foot-col a{
+    display:block; font-size:14px; color:var(--ink);
+    text-decoration:none; margin-bottom:8px; opacity:0.85;
+  }
+  .foot-bottom{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+    padding-top:24px; border-top:1px solid var(--line);
+    font-size:12.5px; color:var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo">cs<span>care</span></div>
+    <nav class="nav-links">
+      <a href="#product">Product</a>
+      <a href="#how">How it works</a>
+      <a href="#who">Who it's for</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="nav-cta" href="#contact">Get in touch</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Clinic Operating System</div>
+      <h1>The front desk your<br>clinic never has to <em>staff twice.</em></h1>
+      <p class="lede">cscare answers the phone, books the appointment, writes up the visit, and messages the patient — so your team can focus on care, not admin.</p>
+      <div class="hero-ctas">
+        <a class="btn-primary" href="#contact">Talk to us →</a>
+        <a class="btn-ghost" href="#product">See how it works</a>
+      </div>
+    </div>
+
+    <div class="call-card">
+      <div class="call-head">
+        <span class="dot"></span> Live call · SmileCare Clinic · 00:47
+      </div>
+      <div class="bubble patient">
+        <span class="tag">Patient</span>
+        Hi, I need an appointment for next week, evening if possible.
+      </div>
+      <div class="bubble ai">
+        <span class="tag">cscare</span>
+        We have Tuesday 6:40 PM open with Dr. Shah. Should I book that?
+      </div>
+      <div class="bubble patient">
+        <span class="tag">Patient</span>
+        Yes please. My name is Priya Mehta.
+      </div>
+      <div class="call-foot">
+        <span>Booked · Google Calendar synced</span>
+        <span class="badge">Confirmed</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap">
+    <span>Built for Indian clinics</span>
+    <span>English · Hindi · Gujarati</span>
+    <span>Voice-first, not app-first</span>
+    <span>DPDP-aligned data handling</span>
+  </div>
+</div>
+
+<section id="product">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">What it does</div>
+      <h2>One system, the whole front-of-clinic.</h2>
+      <p>cscare replaces the patchwork of phone diaries, WhatsApp forwards, and paper prescriptions with a single quiet layer running behind your clinic.</p>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="num">01</div>
+        <h3>AI phone reception</h3>
+        <p>Every call is answered, in the language the patient speaks, and booked straight into your calendar — no missed calls, no double-booking.</p>
+      </div>
+      <div class="feature">
+        <div class="num">02</div>
+        <h3>Clinical notes, structured</h3>
+        <p>The doctor speaks naturally during the visit; cscare turns it into a clean, structured note — ready for the record, not a typing chore.</p>
+      </div>
+      <div class="feature">
+        <div class="num">03</div>
+        <h3>Patient follow-through</h3>
+        <p>Prescriptions and bills reach the patient on WhatsApp automatically, bundled and legible — no photos of handwriting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="flow-section" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">How it works</div>
+      <h2>From ringing phone to closed loop.</h2>
+      <p>Four quiet steps, none of which need your front desk to lift a phone.</p>
+    </div>
+    <div class="flow">
+      <div class="step">
+        <span class="step-index">01</span>
+        <h4>Patient calls</h4>
+        <p>cscare picks up, understands the request, and checks live availability.</p>
+      </div>
+      <div class="step">
+        <span class="step-index">02</span>
+        <h4>Slot is booked</h4>
+        <p>The appointment lands directly on the clinic's calendar — confirmed, not pencilled in.</p>
+      </div>
+      <div class="step">
+        <span class="step-index">03</span>
+        <h4>Visit is recorded</h4>
+        <p>The doctor's spoken notes become a structured clinical record automatically.</p>
+      </div>
+      <div class="step">
+        <span class="step-index">04</span>
+        <h4>Patient is notified</h4>
+        <p>Prescription and billing reach the patient's WhatsApp — no follow-up call needed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="who">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Who it's for</div>
+      <h2>Any clinic that answers its own phone.</h2>
+      <p>cscare is built as general-purpose clinic infrastructure — not tied to one specialty.</p>
+    </div>
+    <div class="who-grid">
+      <div class="who-card">
+        <h4>Dental practices</h4>
+        <p>Recall-heavy scheduling, treatment follow-ups.</p>
+      </div>
+      <div class="who-card">
+        <h4>Specialty clinics</h4>
+        <p>Cardiology, orthopedics, and general surgery practices.</p>
+      </div>
+      <div class="who-card">
+        <h4>Diagnostic centres</h4>
+        <p>High call volume, appointment-heavy operations.</p>
+      </div>
+      <div class="who-card">
+        <h4>Multi-doctor practices</h4>
+        <p>Several calendars, one front desk to manage them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="cta-band">
+      <div>
+        <h2>Bring cscare to your clinic.</h2>
+        <p>We onboard one clinic at a time, personally — so it fits how your front desk actually works.</p>
+      </div>
+      <a class="btn-primary" href="mailto:dev@gopiart.in">Write to us →</a>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="logo">cs<span>care</span></div>
+        <p>An AI-powered clinic operating system for Indian healthcare practices — built in Surat, Gujarat.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Contact</h5>
+        <a href="mailto:dev@gopiart.in">dev@gopiart.in</a>
+        <p>Surat, Gujarat, India</p>
+      </div>
+      <div class="foot-col">
+        <h5>Registered as</h5>
+        <p>cscare</p>
+        <p>Udyam-Registered MSME</p>
+      </div>
+      <div class="foot-col">
+        <h5>Product</h5>
+        <a href="#product">What it does</a>
+        <a href="#how">How it works</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 cscare. All rights reserved.</span>
+      <span>gopiart.in</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
